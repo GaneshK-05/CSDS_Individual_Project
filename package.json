@@ -1,25 +1,22 @@
 {
-  "name": "backend",
+  "name": "csds-app",
   "version": "1.0.0",
-  "main": "server.js",
+  "description": "CSDS - Deadline Submission System",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "install-all": "npm install && cd client && npm install && cd ../server && npm install",
+    "dev": "npm run server:dev & npm run client:dev",
+    "client:dev": "cd client && npm run dev",
+    "server:dev": "cd server && npm start",
+    "client:build": "cd client && npm run build",
+    "server:test": "cd server && npm test",
+    "client:test": "cd client && npm test"
   },
-  "keywords": [],
+  "keywords": [
+    "deadline",
+    "submission",
+    "system"
+  ],
   "author": "",
-  "license": "ISC",
-  "description": "",
-  "dependencies": {
-    "bcrypt": "^6.0.0",
-    "bcryptjs": "^3.0.3",
-    "cookie-parser": "^1.4.7",
-    "cors": "^2.8.6",
-    "dotenv": "^17.2.3",
-    "express": "^5.2.1",
-    "jsonwebtoken": "^9.0.3",
-    "mongoose": "^8.22.0",
-    "nodemon": "^3.1.11"
-  }
+  "license": "ISC"
 }
