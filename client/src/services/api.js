@@ -28,6 +28,14 @@ api.interceptors.response.use(
       // Use replace to avoid issues with back button
       window.location.replace('/');
     }
+    
+    // Log errors for debugging
+    console.error('API Error:', {
+      status: error.response?.status,
+      message: error.message,
+      data: error.response?.data
+    });
+    
     return Promise.reject(error);
   }
 );

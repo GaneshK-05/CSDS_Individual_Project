@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import authService from '../services/authService'
+import { showToast } from '../utils/toast'
 import './Auth.css'
 
 export default function Register({ onSuccess, onSwitchToLogin }) {
@@ -26,13 +27,13 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
     setLoading(true)
 
     if (!formData.name || !formData.email || !formData.password) {
-      setError('All fields are required')
+      showToast.error('All fields are required')
       setLoading(false)
       return
     }
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      showToast.error('Password must be at least 6 characters')
       setLoading(false)
       return
     }
@@ -44,9 +45,12 @@ export default function Register({ onSuccess, onSwitchToLogin }) {
         formData.password,
         formData.role
       )
+      showToast.success('Account created successfully!')
       onSuccess()
     } catch (err) {
-      setError(err.message || 'Registration failed')
+      const errorMsg = err.message || 'Registration failed'
+      setError(errorMsg)
+      showToast.error(errorMsg)
     } finally {
       setLoading(false)
     }

@@ -1,38 +1,76 @@
 import api from './api';
 
 export const submissionService = {
-  submitEntry: async (content) => {
+  submitTask: async (taskId, submissionData) => {
     try {
-      const response = await api.post('/submission/', {
-        content,
-      });
-      return response.data;
+      // If file submission, use FormData
+      if (submissionData.file) {
+        const formData = new FormData();
+        formData.append('submissionType', 'File');
+        formData.append('file', submissionData.file);
+        
+        const response = await api.post(`/submission/${taskId}/submit`, formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        });
+        return response.data;
+      } else {
+        // Text submission
+        const response = await api.post(`/submission/${taskId}/submit`, {
+          submissionType: 'Text',
+          content: submissionData.content
+        });
+        return response.data;
+      }
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Submission failed';
-      const err = new Error(message);
-      throw err;
+      throw new Error(message);
     }
   },
 
-  getMySubmissions: async () => {
+  getUserSubmissions: async () => {
     try {
       const response = await api.get('/submission/my');
+      return Array.isArray(response.data) ? response.data : [];
+    } catch (error) {
+      // Log error but don't throw - allow component to render with empty submissions
+      const message = error.response?.data?.message || error.message || 'Failed to fetch submissions';
+      console.error('getUserSubmissions error:', message);
+      // Return empty array instead of throwing to prevent blank page
+      return [];
+    }
+  },
+
+  getTaskSubmissions: async (taskId) => {
+    try {
+      const response = await api.get(`/submission/task/${taskId}`);
       return response.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to fetch submissions';
-      const err = new Error(message);
-      throw err;
+      throw new Error(message);
     }
   },
 
   getAllSubmissions: async () => {
     try {
-      const response = await api.get('/admin/submissions');
+      const response = await api.get('/submission');
       return response.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to fetch submissions';
-      const err = new Error(message);
-      throw err;
+      throw new Error(message);
+    }
+  },
+
+  downloadSubmissionFile: async (submissionId) => {
+    try {
+      const response = await api.get(`/submission/download/${submissionId}`, {
+        responseType: 'blob'
+      });
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || 'Failed to download file';
+      throw new Error(message);
     }
   },
 
@@ -44,22 +82,28 @@ export const submissionService = {
       return response.data;
     } catch (error) {
       const message = error.response?.data?.message || error.message || 'Failed to set deadline';
-      const err = new Error(message);
-      throw err;
+      throw new Error(message);
     }
   },
 
   getDeadline: async () => {
     try {
-      // Try to get deadline from a new endpoint (you may need to create this)
-      // For now, we'll fetch all submissions to check the deadline
       const response = await api.get('/admin/deadline');
       return response.data;
     } catch (error) {
-      // Silently fail if deadline endpoint doesn't exist
       return null;
     }
   },
+
+  getAnalytics: async () => {
+    try {
+      const response = await api.get('/admin/analytics');
+      return response.data;
+    } catch (error) {
+      const message = error.response?.data?.message || error.message || 'Failed to fetch analytics';
+      throw new Error(message);
+    }
+  }
 };
 
 export default submissionService;

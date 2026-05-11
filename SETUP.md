@@ -3,6 +3,9 @@
 ## Prerequisites
 - Node.js v14+ and npm
 - MongoDB connection string (MongoDB Atlas or local)
+- Multer (for file uploads) - auto-installed via npm
+- Chart.js & react-chartjs-2 (for analytics) - auto-installed via npm
+- react-hot-toast (for notifications) - auto-installed via npm
 
 ## Installation Steps
 
@@ -69,17 +72,21 @@ npm run dev
 
 ## Key Features
 
-✅ User Registration & Login
-✅ JWT Authentication
-✅ Role-based Access Control (USER, ADMIN)
-✅ Deadline Management
-✅ Entry Submission System
-✅ Admin Dashboard (view all submissions)
+✅ **User Registration & Login** - Secure JWT-based authentication with role assignment
+✅ **Role-based Access Control** - Separate interfaces for ADMIN and USER roles
+✅ **Multi-Task Management** - Create and manage multiple assignments with flexible deadlines
+✅ **File Upload System** - Upload files with type and size validation (supports PDF, DOC, DOCX, XLSX, ZIP, PNG, JPG, JPEG)
+✅ **Text & File Submissions** - Flexible submission types with both text and file support
+✅ **Real-time Countdown Timers** - Live deadline countdowns on task cards
+✅ **Submission Status Tracking** - Automatic detection of On Time/Late/Missing submissions
+✅ **Admin Analytics Dashboard** - Comprehensive analytics with submission status pie charts
+✅ **Task Filtering** - User dashboard with filters for All Tasks, Upcoming, Submitted, and Expired
+✅ **Modern UI/UX** - Glassmorphism design with dark theme and smooth animations
+✅ **Toast Notifications** - Real-time feedback for all user actions
 
 ## Testing the API
 
-Use tools like Postman or curl to test endpoints:
-
+### Authentication Endpoints
 ```bash
 # Register
 curl -X POST http://localhost:10000/api/v1/auth/register \
@@ -90,6 +97,54 @@ curl -X POST http://localhost:10000/api/v1/auth/register \
 curl -X POST http://localhost:10000/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"john@example.com","password":"123456"}'
+```
+
+### Task Management Endpoints (ADMIN only)
+```bash
+# Create Task
+curl -X POST http://localhost:10000/api/v1/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title":"Assignment 1",
+    "subject":"CS101",
+    "description":"Submit your code",
+    "deadline":"2024-12-25T23:59:59",
+    "allowedFileTypes":["PDF","DOCX"],
+    "maxFileSize":50,
+    "submissionType":"File"
+  }'
+
+# Get All Tasks
+curl -X GET http://localhost:10000/api/v1/tasks \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Get Task Statistics
+curl -X GET http://localhost:10000/api/v1/tasks/stats \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Submission Endpoints (ALL users)
+```bash
+# Submit Task (with file)
+curl -X POST http://localhost:10000/api/v1/submission/TASK_ID/submit \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -F "file=@/path/to/file.pdf"
+
+# Get My Submissions
+curl -X GET http://localhost:10000/api/v1/submission/my \
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Download Submission File
+curl -X GET http://localhost:10000/api/v1/submission/download/SUBMISSION_ID \
+  -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Admin Analytics Endpoints
+```bash
+# Get Analytics Dashboard Data
+curl -X GET http://localhost:10000/api/v1/admin/analytics \
+  -H "Authorization: Bearer YOUR_TOKEN"
 ```
 
 ## Project Structure

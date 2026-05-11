@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
+import { Toaster } from 'react-hot-toast'
 import Login from './components/Login'
 import Register from './components/Register'
-import Dashboard from './components/Dashboard'
-import Admin from './components/Admin'
+import UserDashboard from './components/UserDashboard'
+import AdminDashboard from './components/AdminDashboard'
 import authService from './services/authService'
+import './styles/globals.css'
 import './App.css'
 
 function App() {
@@ -43,11 +45,13 @@ function App() {
 
   const handleLoginSuccess = () => {
     try {
+      // Immediate redirect - localStorage is synchronous
       const user = authService.getUser()
-      setIsLoggedIn(true)
-      setUserRole(user?.role)
-      // Route based on role
-      setCurrentPage(user?.role === 'ADMIN' ? 'admin' : 'dashboard')
+      if (user) {
+        setIsLoggedIn(true)
+        setUserRole(user.role)
+        setCurrentPage(user.role === 'ADMIN' ? 'admin' : 'dashboard')
+      }
     } catch (error) {
       console.error('Error after login:', error)
     }
@@ -55,11 +59,13 @@ function App() {
 
   const handleRegisterSuccess = () => {
     try {
+      // Immediate redirect - localStorage is synchronous
       const user = authService.getUser()
-      setIsLoggedIn(true)
-      setUserRole(user?.role)
-      // Route based on role
-      setCurrentPage(user?.role === 'ADMIN' ? 'admin' : 'dashboard')
+      if (user) {
+        setIsLoggedIn(true)
+        setUserRole(user.role)
+        setCurrentPage(user.role === 'ADMIN' ? 'admin' : 'dashboard')
+      }
     } catch (error) {
       console.error('Error after register:', error)
     }
@@ -79,8 +85,9 @@ function App() {
   if (isLoading) {
     return (
       <div className="App">
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-          <div>Loading...</div>
+        <Toaster position="top-right" />
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: 'linear-gradient(135deg, #0f172a 0%, #1a1f35 100%)' }}>
+          <div style={{ color: '#f1f5f9', fontSize: '18px' }}>Loading...</div>
         </div>
       </div>
     )
@@ -88,11 +95,12 @@ function App() {
 
   return (
     <div className="App">
+      <Toaster position="top-right" />
       {isLoggedIn ? (
         userRole === 'ADMIN' ? (
-          <Admin onLogout={handleLogout} />
+          <AdminDashboard onLogout={handleLogout} />
         ) : (
-          <Dashboard onLogout={handleLogout} />
+          <UserDashboard onLogout={handleLogout} />
         )
       ) : currentPage === 'register' ? (
         <Register

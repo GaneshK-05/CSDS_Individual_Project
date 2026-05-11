@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import authService from '../services/authService'
+import { showToast } from '../utils/toast'
 import './Auth.css'
 
 export default function Login({ onSuccess, onSwitchToRegister }) {
@@ -24,16 +25,19 @@ export default function Login({ onSuccess, onSwitchToRegister }) {
     setLoading(true)
 
     if (!formData.email || !formData.password) {
-      setError('Email and password are required')
+      showToast.error('Email and password are required')
       setLoading(false)
       return
     }
 
     try {
       await authService.login(formData.email, formData.password)
+      showToast.success('Login successful!')
       onSuccess()
     } catch (err) {
-      setError(err.message || 'Login failed')
+      const errorMsg = err.message || 'Login failed'
+      setError(errorMsg)
+      showToast.invalidLogin(errorMsg)
     } finally {
       setLoading(false)
     }
